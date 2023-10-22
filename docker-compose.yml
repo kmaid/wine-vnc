@@ -12,7 +12,7 @@ services:
       platforms:
         - linux/x86_64
       dockerfile: Dockerfile
-    pull_policy: always
+    pull_policy: build
     container_name: sync
     restart: unless-stopped
     environment:
@@ -31,5 +31,10 @@ services:
       - traefik.http.routers.sync.rule=Host(`sync.${DOMAIN_NAME}`)
       - traefik.http.routers.sync.tls=true
       - traefik.http.routers.sync.tls.certresolver=myresolver
+    volumes:
+      - synccom_data:/root/.wine
+      - ${DATA_ROOT}/Sync:/root/.wine/drive_c/users/root/Sync
     networks:
       - web
+volumes:
+  synccom_data:

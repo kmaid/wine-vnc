@@ -1,0 +1,35 @@
+version: "3"
+
+networks:
+  web:
+    external: true
+
+services:
+  sync:
+    platform: linux/x86_64
+    build:
+      context: .
+      platforms:
+        - linux/x86_64
+      dockerfile: Dockerfile
+    pull_policy: always
+    container_name: sync
+    restart: unless-stopped
+    environment:
+      - DOMAIN_NAME=${DOMAIN_NAME}
+      - DISPLAY=${DISPLAY}
+      - VNC_PASSWORD=${VNC_PASSWORD}
+    labels:
+      - homepage.group=Automation
+      - homepage.name=Sync
+      - homepage.icon=https://www.sync.com/assets-meta/favicon-32x32.png
+      - homepage.href=http://sync.${DOMAIN_NAME}/vnc.html
+      - homepage.description=Sync.com files client
+      - homepage.weight=5
+      - traefik.enable=true
+      - traefik.http.routers.sync.entrypoints=web,websecure
+      - traefik.http.routers.sync.rule=Host(`sync.${DOMAIN_NAME}`)
+      - traefik.http.routers.sync.tls=true
+      - traefik.http.routers.sync.tls.certresolver=myresolver
+    networks:
+      - web

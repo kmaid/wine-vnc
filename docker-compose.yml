@@ -12,7 +12,7 @@ services:
     labels:
       - homepage.group=Automation
       - homepage.name=Sync
-      - homepage.icon=https://www.sync.com/assets-meta/favicon-32x32.png
+      - homepage.icon=https://www.sync.com/hubfs/favicon.ico
       - homepage.href=http://sync.${DOMAIN_NAME}/vnc.html
       - homepage.description=Sync.com files client
       - homepage.weight=5

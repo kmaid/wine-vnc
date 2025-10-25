@@ -10,7 +10,7 @@ RUN apk add novnc winetricks wine-mono --repository=http://dl-cdn.alpinelinux.or
 
 ADD supervisord.conf /etc/supervisord.conf
 
-RUN wget https://www.sync.com/download/legacy/win/sync-installer.exe
+RUN wget https://www10.sync.com/download/ult/win/sync-installer-2.2.53.exe
 
 EXPOSE 6080
 

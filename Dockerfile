@@ -14,7 +14,10 @@ RUN chmod +x /start.sh
 
 RUN echo "0 3 * * * /usr/bin/supervisorctl restart syncom" >> /etc/crontabs/root
 
-RUN wget https://www10.sync.com/download/ult/win/sync-installer-2.2.53.exe
+RUN wget -qO- https://www.sync.com/install \
+    | grep -oE 'https://www10\.sync\.com/download/ult/win/sync-installer-2\.[0-9.]+\.exe' \
+    | head -1 \
+    | xargs wget
 
 EXPOSE 6080
 

@@ -9,6 +9,7 @@ services:
       - DOMAIN_NAME=${DOMAIN_NAME}
       - DISPLAY=${DISPLAY}
       - VNC_PASSWORD=${VNC_PASSWORD}
+      - TZ=${TZ:-UTC}
     labels:
       - homepage.group=Automation
       - homepage.name=Sync

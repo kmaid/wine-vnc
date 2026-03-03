@@ -9,9 +9,13 @@ RUN apk add wine --repository=http://dl-cdn.alpinelinux.org/alpine/edge/communit
 RUN apk add novnc winetricks wine-mono --repository=http://dl-cdn.alpinelinux.org/alpine/edge/testing/
 
 ADD supervisord.conf /etc/supervisord.conf
+ADD start.sh /start.sh
+RUN chmod +x /start.sh
+
+RUN echo "0 3 * * * /usr/bin/supervisorctl restart syncom" >> /etc/crontabs/root
 
 RUN wget https://www10.sync.com/download/ult/win/sync-installer-2.2.53.exe
 
 EXPOSE 6080
 
-ENTRYPOINT ["/usr/bin/supervisord", "-c", "/etc/supervisord.conf"]
+ENTRYPOINT ["/start.sh"]

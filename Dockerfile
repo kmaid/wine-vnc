@@ -2,7 +2,7 @@ FROM alpine:latest
 
 ARG DISPLAY=":0"
 
-RUN apk add x11vnc xvfb xfce4 bash supervisor wget --no-cache
+RUN apk add x11vnc xvfb xfce4 xfce4-terminal firefox-esr bash supervisor wget --no-cache
 
 RUN apk add wine --repository=http://dl-cdn.alpinelinux.org/alpine/edge/community/
 

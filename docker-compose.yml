@@ -14,7 +14,7 @@ services:
       - homepage.group=Automation
       - homepage.name=Sync
       - homepage.icon=https://www.sync.com/hubfs/favicon.ico
-      - homepage.href=http://sync.${DOMAIN_NAME}/vnc.html
+      - homepage.href=https://sync.${DOMAIN_NAME}/vnc.html
       - homepage.description=Sync.com files client
       - homepage.weight=5
       - traefik.enable=true
@@ -22,7 +22,7 @@ services:
       - traefik.http.routers.sync.rule=Host(`sync.${DOMAIN_NAME}`)
       - traefik.http.routers.sync.tls=true
       - traefik.http.routers.sync.tls.certresolver=myresolver
-      - "com.centurylinklabs.watchtower.enable=false"
+      - "wud.watch=false"
 
     volumes:
       - synccom_data:/root/.wine

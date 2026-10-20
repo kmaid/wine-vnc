@@ -1,20 +1,29 @@
-version: "3"
 services:
   sync:
     build: .
     pull_policy: build
     container_name: sync
     restart: unless-stopped
+    stop_grace_period: 30s
+    ulimits:
+      nofile:
+        soft: 524288
+        hard: 524288
     environment:
-      - DOMAIN_NAME=${DOMAIN_NAME}
-      - DISPLAY=${DISPLAY}
-      - VNC_PASSWORD=${VNC_PASSWORD}
+      - USER_ID=0
+      - GROUP_ID=0
       - TZ=${TZ:-UTC}
+      - VNC_PASSWORD=${VNC_PASSWORD}
+      - WEB_AUTHENTICATION=${WEB_AUTHENTICATION:-0}
+      # TLS is terminated by Traefik, so the container itself only speaks HTTP.
+      - WEB_AUTHENTICATION_ALLOW_INSECURE=1
+      - WEB_AUTHENTICATION_USERNAME=${WEB_AUTHENTICATION_USERNAME}
+      - WEB_AUTHENTICATION_PASSWORD=${WEB_AUTHENTICATION_PASSWORD}
     labels:
       - homepage.group=Automation
       - homepage.name=Sync
       - homepage.icon=https://www.sync.com/hubfs/favicon.ico
-      - homepage.href=https://sync.${DOMAIN_NAME}/vnc.html
+      - homepage.href=https://sync.${DOMAIN_NAME}/
       - homepage.description=Sync.com files client
       - homepage.weight=5
       - traefik.enable=true
@@ -22,15 +31,19 @@ services:
       - traefik.http.routers.sync.rule=Host(`sync.${DOMAIN_NAME}`)
       - traefik.http.routers.sync.tls=true
       - traefik.http.routers.sync.tls.certresolver=myresolver
+      - traefik.http.services.sync.loadbalancer.server.port=5800
       - "wud.watch=false"
+      - com.centurylinklabs.watchtower.enable=false
+      - autoheal.stop.timeout=30
 
     volumes:
-      - synccom_data:/root/.wine
-      - ${DATA_ROOT}/Sync:/root/.wine/drive_c/users/root/Sync
+      - synccom_data:/config/wine
+      - ${DATA_ROOT}/Sync:/config/wine/drive_c/users/root/Sync
     networks:
       - web
 volumes:
   synccom_data:
+    name: synccom_synccom_data
 networks:
   web:
     external: true

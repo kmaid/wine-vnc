@@ -29,7 +29,9 @@ else
     echo 0 > /tmp/sync-worker.log.start
 fi
 
-wine "$SYNC_DIR/sync-taskbar.exe" &
+# Run inside a Wine virtual desktop with Wine's own taskbar. Tray icons docked into an
+# X11 tray never receive mouse clicks under Wine, so Sync's menu is only usable here.
+wine explorer /desktop=shell,1920x1080 'C:\Program Files (x86)\Sync\sync-taskbar.exe' &
 sleep 30
 
 # wineserver never closes a file descriptor while another handle holds a lock on the

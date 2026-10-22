@@ -1,25 +1,30 @@
-FROM jlesage/baseimage-gui:debian-12-v4.14.0
+FROM jlesage/baseimage-gui:debian-13-v4.14.0
 
-# Must stay >= the Wine version that created the existing prefix (11.0).
-ARG WINE_VERSION=11.0.0.0~bookworm-1
+# Wine development builds: 11.0 hides the systray whenever Wine's taskbar is shown,
+# which is fixed from 11.2. Must stay >= the version that last updated the prefix.
+ARG WINE_VERSION=11.20~trixie-1
+# The version Wine expects, from MONO_VERSION in dlls/appwiz.cpl/addons.c.
+ARG WINE_MONO_VERSION=11.3.0
 
 RUN . /opt/base/bin/cmn-pkg \
     && init_env \
     && dpkg --add-architecture i386 \
     && apt-get update \
-    && apt-get install -y --no-install-recommends ca-certificates curl gnupg procps \
+    && apt-get install -y --no-install-recommends ca-certificates curl gnupg procps xz-utils \
     && mkdir -pm755 /etc/apt/keyrings \
     && curl -fsSL https://dl.winehq.org/wine-builds/winehq.key \
         | gpg --dearmor -o /etc/apt/keyrings/winehq-archive.key \
-    && curl -fsSL -o /etc/apt/sources.list.d/winehq-bookworm.sources \
-        https://dl.winehq.org/wine-builds/debian/dists/bookworm/winehq-bookworm.sources \
+    && curl -fsSL -o /etc/apt/sources.list.d/winehq-trixie.sources \
+        https://dl.winehq.org/wine-builds/debian/dists/trixie/winehq-trixie.sources \
     && apt-get update \
     && apt-get install -y --install-recommends \
-        winehq-stable="$WINE_VERSION" \
-        wine-stable="$WINE_VERSION" \
-        wine-stable-amd64="$WINE_VERSION" \
-        wine-stable-i386:i386="$WINE_VERSION" \
-        tint2 \
+        winehq-devel="$WINE_VERSION" \
+        wine-devel="$WINE_VERSION" \
+        wine-devel-amd64="$WINE_VERSION" \
+        wine-devel-i386:i386="$WINE_VERSION" \
+    && mkdir -p /opt/wine-devel/share/wine/mono \
+    && curl -fsSL "https://dl.winehq.org/wine/wine-mono/$WINE_MONO_VERSION/wine-mono-$WINE_MONO_VERSION-x86.tar.xz" \
+        | tar -xJ -C /opt/wine-devel/share/wine/mono \
     && apt-get purge -y gnupg \
     && apt-get autoremove -y \
     && cleanup_env \
@@ -37,7 +42,7 @@ ENV WINEPREFIX=/config/wine \
 COPY rootfs/ /
 COPY startapp.sh /startapp.sh
 COPY healthcheck.sh /healthcheck.sh
-RUN chmod +x /startapp.sh /healthcheck.sh /etc/services.d/tint2/run \
+RUN chmod +x /startapp.sh /healthcheck.sh \
     && set-cont-env APP_NAME "Sync.com"
 
 HEALTHCHECK --interval=5m --timeout=30s --start-period=10m --retries=2 CMD /healthcheck.sh

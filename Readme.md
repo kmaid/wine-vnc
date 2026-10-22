@@ -2,7 +2,7 @@
 
 Runs the official [Sync.com](https://www.sync.com) Windows client under [Wine](https://www.winehq.org) so a Linux server keeps a local copy of a Sync folder, for example as an Immich external library.
 
-It is built on [jlesage/baseimage-gui](https://github.com/jlesage/docker-baseimage-gui) (Debian 12) with a pinned WineHQ stable release, and only runs on x86_64 hosts. The desktop is served over the web on port 5800 and over VNC on 5900.
+It is built on [jlesage/baseimage-gui](https://github.com/jlesage/docker-baseimage-gui) (Debian 13) with a pinned WineHQ development release and bundled Wine Mono, and only runs on x86_64 hosts. The desktop is served over the web on port 5800 and over VNC on 5900.
 
 Not affiliated with Sync.com Inc.
 
@@ -10,7 +10,7 @@ Not affiliated with Sync.com Inc.
 
 Open the web UI and enter `VNC_PASSWORD`. If Sync isn't installed in the Wine prefix yet, the installer starts automatically. Click through it and log in. On later starts the client launches by itself.
 
-Sync lives in the system tray. A small [tint2](https://gitlab.com/o9000/tint2) panel in the bottom-right corner hosts the tray icon; click it to open Sync's status and settings windows. Wine windows open as normal, decorated windows.
+Sync runs inside a Wine virtual desktop that fills the browser window. Wine's taskbar runs along the bottom, and the Sync icon is in its notification area on the right: left-click it for the status panel, right-click for the menu (settings, pause and so on). Tray icons docked into an X11 tray such as tint2 never receive mouse clicks under Wine, which is why the image uses Wine's own taskbar instead.
 
 ## Configuration
 

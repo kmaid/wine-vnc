@@ -34,11 +34,10 @@ ENV WINEPREFIX=/config/wine \
     WINEDEBUG=fixme-all \
     KEEP_APP_RUNNING=1
 
+COPY rootfs/ /
 COPY startapp.sh /startapp.sh
 COPY healthcheck.sh /healthcheck.sh
-RUN chmod +x /startapp.sh /healthcheck.sh \
-    && set-cont-env APP_NAME "Sync.com" \
-    && sed -i 's/<decor>no<\/decor>/<decor>yes<\/decor>/g; s/<maximized>true<\/maximized>/<maximized>false<\/maximized>/g; s/<layer>below<\/layer>/<layer>normal<\/layer>/g' /opt/base/etc/openbox/rc.xml.template \
-    && sed -i '/%MAIN_APP_WINDOW_MATCH_CRITERIAS%/a \    <position force="yes"><x>center<\/x><y>center<\/y><\/position>' /opt/base/etc/openbox/rc.xml.template
+RUN chmod +x /startapp.sh /healthcheck.sh /etc/services.d/tint2/run \
+    && set-cont-env APP_NAME "Sync.com"
 
 HEALTHCHECK --interval=5m --timeout=30s --start-period=10m --retries=2 CMD /healthcheck.sh

@@ -1,0 +1,2 @@
+#!/bin/sh
+exec tint2 -c /etc/tint2/sync.tint2rc

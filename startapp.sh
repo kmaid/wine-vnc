@@ -6,6 +6,7 @@ export USER=root
 
 SYNC_DIR="$WINEPREFIX/drive_c/Program Files (x86)/Sync"
 WORKER_LOG="$WINEPREFIX/drive_c/users/root/AppData/Local/Sync.Logs/sync-worker.log"
+FD_RESTART_PERCENT="${FD_RESTART_PERCENT:-50}"
 
 # Clear out Wine processes left behind by a previous run (e.g. an orphaned sync-worker.exe).
 wineserver -k 2>/dev/null
@@ -28,16 +29,24 @@ else
     echo 0 > /tmp/sync-worker.log.start
 fi
 
-# Start tint2 panel in the background so Wine has a system tray to dock tray icons into.
-if command -v tint2 >/dev/null 2>&1 && ! pgrep -f 'tint2' >/dev/null 2>&1; then
-    tint2 &
-fi
+wine "$SYNC_DIR/sync-taskbar.exe" &
+sleep 30
 
-wine "$SYNC_DIR/sync-taskbar.exe"
-
-# The taskbar may re-launch itself (e.g. after an update), so only exit once it is really gone.
+# wineserver never closes a file descriptor while another handle holds a lock on the
+# same file, and Sync reopens its locked worker.lock and state.db constantly, so the
+# count only grows. Restart well before it reaches the open-file limit.
 while pgrep -f 'sync-taskbar\.exe' > /dev/null; do
-    sleep 30
+    server=$(pgrep -x wineserver)
+    if [ -n "$server" ]; then
+        fds=$(ls "/proc/$server/fd" | wc -l)
+        limit=$(awk '/Max open files/ { print $4 }' "/proc/$server/limits")
+        if [ "$fds" -ge $((limit * FD_RESTART_PERCENT / 100)) ]; then
+            echo "wineserver holds $fds of $limit file descriptors, restarting Sync"
+            wineserver -k
+            exit 0
+        fi
+    fi
+    sleep 60
 done
 
 echo "sync-taskbar.exe exited, restarting"

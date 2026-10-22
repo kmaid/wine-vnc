@@ -10,7 +10,9 @@ Not affiliated with Sync.com Inc.
 
 Open the web UI and enter `VNC_PASSWORD`. If Sync isn't installed in the Wine prefix yet, the installer starts automatically. Click through it and log in. On later starts the client launches by itself.
 
-Sync runs inside a Wine virtual desktop that fills the browser window. Wine's taskbar runs along the bottom, and the Sync icon is in its notification area on the right: click it for the status panel, whose gear button leads to the settings. `startapp.sh` sets Windows' `SystemUsesLightTheme` so Sync draws a dark icon that shows up on Wine's light taskbar. Tray icons docked into an X11 tray such as tint2 never receive mouse clicks under Wine, which is why the image uses Wine's own taskbar instead.
+Sync runs inside a Wine virtual desktop that fills the browser window. Wine's taskbar runs along the bottom, and the Sync icon is in its notification area on the right: click it for the status panel, whose gear button leads to the settings. `startapp.sh` sets Windows' `SystemUsesLightTheme` so Sync draws a dark icon that shows up on Wine's light taskbar.
+
+The display is fixed at 1920x1080 (`-AcceptSetDesktopSize=0`) and the web viewer scales it to fit the browser. The Wine desktop doesn't follow display resizes, so letting the browser resize it would push the taskbar off-screen. If a browser remembers an older "Remote resizing" setting, switch Scaling Mode to "Local scaling" in the viewer's settings panel. Tray icons docked into an X11 tray such as tint2 never receive mouse clicks under Wine, which is why the image uses Wine's own taskbar instead.
 
 ## Configuration
 

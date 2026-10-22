@@ -35,9 +35,15 @@ RUN curl -fsSL https://www.sync.com/install \
     | head -1 \
     | xargs curl -fsSL -o /opt/sync-installer.exe
 
+# Wine's virtual desktop keeps the size it started with, so its taskbar ends up off-screen if
+# the browser resizes the display. Pin the display and have noVNC scale it instead.
 ENV WINEPREFIX=/config/wine \
     WINEDEBUG=fixme-all \
-    KEEP_APP_RUNNING=1
+    KEEP_APP_RUNNING=1 \
+    XVNC_SERVER_CUSTOM_PARAMS="-AcceptSetDesktopSize=0"
+
+RUN sed -i "s/let resize = 'remote';/let resize = 'scale';/" /opt/noVNC/app/ui.js \
+    && grep -q "let resize = 'scale';" /opt/noVNC/app/ui.js
 
 COPY rootfs/ /
 COPY startapp.sh /startapp.sh

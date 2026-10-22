@@ -22,6 +22,10 @@ if [ ! -f "$SYNC_DIR/sync-taskbar.exe" ]; then
     fi
 fi
 
+# Wine's taskbar is light, and without this Sync draws a white tray icon on it.
+wine reg add 'HKCU\Software\Microsoft\Windows\CurrentVersion\Themes\Personalize' \
+    /v SystemUsesLightTheme /t REG_DWORD /d 1 /f > /dev/null 2>&1
+
 # The healthcheck only inspects worker log lines written after this point.
 if [ -f "$WORKER_LOG" ]; then
     wc -l < "$WORKER_LOG" > /tmp/sync-worker.log.start
